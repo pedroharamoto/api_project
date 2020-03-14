@@ -16,7 +16,7 @@ class Database{
     // Construct method to create the $db_name database, if it doesn't exist
     //
     public function __construct(){
-
+        //
         $this->conn = null; //sets the public variable $conn as null in order to clean it
 
         try{
