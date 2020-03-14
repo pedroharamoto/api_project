@@ -1,4 +1,5 @@
 <?php
+header("Content-Type: application/json; charset=UTF-8");
 // File created by Pedro Haramoto on 14/03/2020
 //
 // This file defines the database's class and its methods
@@ -21,7 +22,7 @@ class Database{
 
         try{
             //tries the connection
-            // Using PDO in order to use an expection class that handles possible problems that may occur
+            // Using PDO in order to use an exception class that handles possible problems that may occur
             $this->conn = new PDO("mysql:host=".$this->host, $this->username, $this->password);
             $this->conn->exec("SET NAMES utf8");
             //
@@ -109,7 +110,7 @@ class Database{
         $stmt->execute(); //executes the query
         //
     }
+    //
 }
-
 
 ?>
