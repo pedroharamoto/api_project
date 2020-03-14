@@ -7,25 +7,61 @@ class User{
     //
     private $conn;
     //
-    private $user_id;
-    private $user_name;
-    private $user_email;
-    private $user_password;
+    public $user_id;
+    public $user_name;
+    public $user_email;
+    public $user_password;
     //
     public function __construct($db){
         // tries de connection
         $this->conn = $db;
     }
     //
-    // method to insert a new user
+    // method to create a new user
     //
     public function newUser(){
+        //
+        // before we create a new user, it is necessary to verify if the email already exists.
+        //
+        if($this->existsUserByEmail()){
+            //
+            echo json_encode(array("message" => "It was not possible to insert a new row to database, because " . $this->user_email . " already exists."));
+        }
+        else{
+            //
+            $query = "  INSERT INTO user
+                        SET
+                            user_name       = :user_name,
+                            user_email      = :user_email,
+                            user_password   = :user_password
+                    ";
 
+            //prepares the query
+            $stmt = $this->conn->prepare($query);
+            // removing all the special characters
+            $this->user_name        = htmlspecialchars(strip_tags($this->user_name));
+            $this->user_email       = htmlspecialchars(strip_tags($this->user_email));
+            $this->user_password    = htmlspecialchars(strip_tags($this->user_password));
+
+            // bindind all the values to the query
+            $stmt->bindParam(':user_name', $this->user_name);
+            $stmt->bindParam(':user_email', $this->user_email);
+
+            // hashing the password
+            $password_hash = password_hash($this->user_password, PASSWORD_BCRYPT);
+            $stmt->bindParam(':user_password', $password_hash);
+
+            // execute the query, also check if query was successful
+            if($stmt->execute()){
+                return true;
+            }
+            echo json_encode(array("message" => "It was not possible to insert a new row to database"));
+        }
     }
     //
     // Method to return all the users or the specific user
     //
-    public function getUser($id){
+    public function getUserById($id){
         // This function has a required parameter
         // If $id = 0, then all the users are returned
         // If $id != 0, then its returned the specified user, which is $id itself
@@ -48,7 +84,7 @@ class User{
                extract($row); // gets the iteration record
                //
                $user = array(
-                   "iduser"         => $user_id,
+                   "user_id"         => $user_id,
                    "user_name"      => $user_name,
                    "user_email"     => $user_email,
                    "user_password"  => $user_password
@@ -59,7 +95,33 @@ class User{
         //
         return json_encode($users_array); //encodes the final array and return the encoded JSON
     }
+    //
+    public function existsUserByEmail(){
+        //
+        // This function will be searching the user by its email
+        //
+        $query = "SELECT * FROM user WHERE user_email = '" . $this->user_email . "' LIMIT 0,1";
+        //
+        $stmt = $this->conn->prepare($query); // prepares the query
+        $stmt->execute(); // executes the statement
+        //
+        $row = $stmt->rowCount(); //counts how many user(s) the query has returned
+        //
+        if($row>0){
+            // there is one user
+            $row = $stmt->fetch(PDO::FETCH_ASSOC); // gets the iteration record
+            // sets the values to object properties
+            $this->user_id       = $row['user_id'];
+            $this->user_name     = $row['user_name'];
+            $this->user_password = $row['password'];
+
+            return true; // the user exists
+        }
+        //
+        return false; //the user doesn't exist
+    }
 }
+//
 
 
 ?>

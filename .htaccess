@@ -8,12 +8,12 @@ RewriteEngine On
 RewriteCond %{SCRIPT_FILENAME} !-f
 RewriteCond %{SCRIPT_FILENAME} !-d
 
-#/users/                -> will redirect to a page to create a new user     (POST method)
-#/users/                -> will redirect to a page to return all the users  (GET method)
-#/users/:iduser         -> will redirect to a page to return the specified iduser   (GET method)
-#/users/:iduser         -> will redirect to a page to edit the specified iduser     (PUT method)
-#/users/:iduser         -> will redirect to a page to delete the specified iduser   (DELETE method)
-#/users/:iduser/drink   -> will redirect to a page to count how many times the specified iduser drank water (POST method)
-#/login                 -> will redirect to a page to login (POST method)
+# /users/                -> will redirect to a page to create a new user     (POST method)
+# /users/                -> will redirect to a page to return all the users  (GET method)
+# /users/:iduser         -> will redirect to a page to return the specified iduser   (GET method)
+# /users/:iduser         -> will redirect to a page to edit the specified iduser     (PUT method)
+# /users/:iduser         -> will redirect to a page to delete the specified iduser   (DELETE method)
+# /users/:iduser/drink   -> will redirect to a page to count how many times the specified iduser drank water (POST method)
+# /login                 -> will redirect to a page to login (POST method)
 
 RewriteRule ^users$ user.php
