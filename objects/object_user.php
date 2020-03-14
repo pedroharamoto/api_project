@@ -3,8 +3,6 @@
 //
 // This file defines the user's class and its methods
 //
-include_once '../database/database_config.php';
-//
 class User{
     //
     private $conn;
@@ -19,14 +17,20 @@ class User{
         $this->conn = $db;
     }
     //
-    // Method to return all the users
+    // method to insert a new user
+    //
+    public function newUser(){
+
+    }
+    //
+    // Method to return all the users or the specific user
     //
     public function getUser($id){
         // This function has a required parameter
         // If $id = 0, then all the users are returned
         // If $id != 0, then its returned the specified user, which is $id itself
         //
-        $query = "SELECT user_id, user_name, user_email, user_password FROM user WHERE 1 ";
+        $query = "SELECT * FROM user WHERE 1 ";
         //
         if($id){
             $query .= " AND user_id = " . $id;
@@ -41,7 +45,7 @@ class User{
         //
         while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
                //
-               extract($row); // gets the itaration record
+               extract($row); // gets the iteration record
                //
                $user = array(
                    "iduser"         => $user_id,
@@ -53,14 +57,9 @@ class User{
                array_push($users_array,$user);
         }
         //
-        return json_encode($users_array); //encodes the final array and return the JSON
+        return json_encode($users_array); //encodes the final array and return the encoded JSON
     }
 }
-$database   = new Database();
-$db         = $database->getConnection();
-$user       = new User($db);
-$users      = $user->getUser(2);
 
-echo ($users);
 
 ?>

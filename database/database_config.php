@@ -1,10 +1,8 @@
 <?php
-header("Content-Type: application/json; charset=UTF-8");
 // File created by Pedro Haramoto on 14/03/2020
 //
 // This file defines the database's class and its methods
 //
-
 // Creating the Database Class
 class Database{
     // Setting all the database's credentials
