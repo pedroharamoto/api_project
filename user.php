@@ -44,48 +44,87 @@ if ( ($method) != "GET"){
     }
 }
 else{
-    //
-    // Get a iduser using token as HEADER
-    //
-    $headers = apache_request_headers();
-    //
-    $jwt=isset($headers['token']) ? $headers['token'] : "";
-    //
-    // if jwt is not empty
-    if($jwt){
+    if($_GET["iduser"]){
+        // if exists an iduser, then
+        // Get a iduser using token as HEADER
         //
-        // all the tokens definitions are in "database/database_config.php"
-        // such as $key, $iss...
+        $headers = apache_request_headers();
         //
-        try {
-            // decode jwt
-            $decoded = JWT::decode($jwt, $key, array('HS256'));
-            // set response code
-            http_response_code(200);
+        $jwt=isset($headers['token']) ? $headers['token'] : "";
+        //
+        // if jwt is not empty
+        if($jwt){
             //
-            if($user->getUserById($_GET['iduser'])){
-                // if it is true, then a user has been found
-                // show user informations
+            // all the tokens definitions are in "database/database_config.php"
+            // such as $key, $iss...
+            //
+            try {
+                // decode jwt
+                $decoded = JWT::decode($jwt, $key, array('HS256'));
+                // set response code
+                http_response_code(200);
+                //
+                if($user->getUserById($_GET['iduser'])){
+                    // if it is true, then a user has been found
+                    // show user informations
+                    echo json_encode(array(
+                        "message" => "Clear to go.",
+                        "data" => $user
+                    ));
+                }
+                else{
+                    echo json_encode(array(
+                        "message" => "User " . $_GET['iduser'] . ' was not found'
+                    ));
+                }
+            }
+            catch (Exception $e){
+                // set response code
+                http_response_code(401);
+                // tell the user access denied, then an error message is shown
+                echo json_encode(array(
+                    "message" => "Access denied.",
+                    "error" => $e->getMessage()
+                ));
+            }
+        }
+    }
+    else{
+        //
+        // get all users
+        //
+        $headers = apache_request_headers();
+        //
+        $jwt=isset($headers['token']) ? $headers['token'] : "";
+        //
+        // if jwt is not empty
+        if($jwt){
+            //
+            // all the tokens definitions are in "database/database_config.php"
+            // such as $key, $iss...
+            //
+            try {
+                // decode jwt
+                $decoded = JWT::decode($jwt, $key, array('HS256'));
+                // set response code
+                http_response_code(200);
+                // show users
                 echo json_encode(array(
                     "message" => "Clear to go.",
-                    "data" => $user
+                    "data" => $user->getAllUsers()
                 ));
             }
-            else{
+            catch (Exception $e){
+                // set response code
+                http_response_code(401);
+                // tell the user access denied, then an error message is shown
                 echo json_encode(array(
-                    "message" => "User " . $_GET['iduser'] . ' was not found'
+                    "message" => "Access denied.",
+                    "error" => $e->getMessage()
                 ));
             }
         }
-        catch (Exception $e){
-            // set response code
-            http_response_code(401);
-            // tell the user access denied, then an error message is shown
-            echo json_encode(array(
-                "message" => "Access denied.",
-                "error" => $e->getMessage()
-            ));
-        }
+        //
     }
 }
 ?>

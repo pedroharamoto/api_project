@@ -133,9 +133,40 @@ class User{
     //
     public function getAllUsers(){
         //
-        // this funcion will return all the users
+        // this funcion will return all users
         //
+        $query = "SELECT * FROM user";
+        //
+        $stmt = $this->conn->prepare($query); // prepare the query
+        $stmt->execute(); // execute the statement
+        //
+        $row = $stmt->rowCount(); //count how many user(s) the query has returned
+        //
+        if($row>0){
+            // users array
+            $users_array=array();
 
+            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
+                // extract row
+                // this will turn $row['user_id'] to user_id
+                extract($row);
+                //
+                $each_user=array(
+                    "user_id"       => $user_id,
+                    "user_name"     => $user_name,
+                    "user_email"    => $user_email
+                );
+                //
+                array_push($users_array, $each_user);
+            }
+
+            http_response_code(200); // OK
+
+            // Show all users | array
+            return ($users_array);
+        }
+        //
+        return false; //the user doesn't exist
     }
 }
 //
