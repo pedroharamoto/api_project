@@ -60,6 +60,52 @@ class User{
         }
     }
     //
+    // this method will update an user
+    //
+    public function updateUser($id){
+        //
+        // before editting the user register, it is necessary to verify if the user is trying to change to an existing email
+        //
+        if($this->existsUserByEmailandId($id)){
+            //
+            echo json_encode(array("message" => "It was not possible to edit this email, because " . $this->user_email . " already exists."));
+            //
+            return False;
+        }
+        else{
+            $query = "  UPDATE user
+                        SET
+                            user_name       = :user_name,
+                            user_email      = :user_email,
+                            user_password   = :user_password
+                        WHERE
+                            user_id         = :user_id
+                    ";
+
+            //prepare the query
+            $stmt = $this->conn->prepare($query);
+            // removing all the special characters
+            $this->user_name        = htmlspecialchars(strip_tags($this->user_name));
+            $this->user_email       = htmlspecialchars(strip_tags($this->user_email));
+            $this->user_password    = htmlspecialchars(strip_tags($this->user_password));
+
+            // bindind all the values to the query
+            $stmt->bindParam(':user_name', $this->user_name);
+            $stmt->bindParam(':user_email', $this->user_email);
+            $stmt->bindParam(':user_id', $id);
+
+            // hashing the password
+            $password_hash = password_hash($this->user_password, PASSWORD_BCRYPT);
+            $stmt->bindParam(':user_password', $password_hash);
+
+            // execute the query, also check if query was successful
+            if($stmt->execute()){
+                return true;
+            }
+            echo json_encode(array("message" => "It was not possible to update"));
+        }
+    }
+    //
     // Method to return all the users or the specific user
     //
     public function getUserById($id){
@@ -86,6 +132,25 @@ class User{
             $this->user_password        = '';
             $this->user_drink_counter   = $stmt->rowCount(); //just how many times, not all the information
             //
+            return true; // the user exists
+        }
+        //
+        return false; //the user doesn't exist
+    }
+    //
+    public function existsUserByEmailandId($id){
+        //
+        // This function will be searching the user by its email and id
+        //
+        $query = "SELECT * FROM user WHERE user_email = '" . $this->user_email . "' AND user_id != " . $id . " LIMIT 0,1";
+        //
+        $stmt = $this->conn->prepare($query); // prepare the query
+        $stmt->execute(); // execute the statement
+        //
+        $row = $stmt->rowCount(); //count how many user(s) the query has returned
+        //
+        if($row>0){
+            // there is one user
             return true; // the user exists
         }
         //
