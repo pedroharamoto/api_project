@@ -113,12 +113,33 @@ class User{
             // sets the values to object properties
             $this->user_id       = $row['user_id'];
             $this->user_name     = $row['user_name'];
-            $this->user_password = $row['password'];
-
+            $this->user_password = $row['user_password'];
+            //
             return true; // the user exists
         }
         //
         return false; //the user doesn't exist
+    }
+    //
+    public function countTimesDrink(){
+        //
+        // this function will count how many times the user drank water
+        //
+        $query = "SELECT * FROM user_drink WHERE user_id = '" . $this->user_id . "'";
+        //
+        $stmt = $this->conn->prepare($query); // prepares the query
+        $stmt->execute(); // executes the statement
+        //
+        $row = $stmt->rowCount(); //counts how many times
+        //
+        return $row; // times
+    }
+    //
+    public function getAllUsers(){
+        //
+        // this funcion will return all the users
+        //
+
     }
 }
 //
