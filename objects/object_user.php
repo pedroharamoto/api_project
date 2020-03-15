@@ -355,6 +355,57 @@ class User{
         //
         return false; //the user doesn't exist
     }
+    //
+    public function getListPagination($page,$qty){
+        //
+        // this function returns x users, limited by $page number
+        //
+        $begin  = ($page*$qty);
+        /*
+        if page:0 and quantity: 50.
+        LIMIT quantity OFFSET begin
+        //
+        then page 1 (0, actually) will return 50 registers (0-50)       | LIMIT 50 OFFSET 0
+        page 2 (1, actually) will return 50 registers       (50-100)    | LIMIT 50 OFFSET 50
+        page 3 (2, actually) will return 50 registers       (100-150)   | LIMIT 50 OFFSET 100
+        ...
+        */
+        //
+        $query = "SELECT * FROM `user` ORDER BY user_name ASC LIMIT " . ($qty) . " OFFSET " . ($begin);
+        //
+        echo $query;
+        //
+        $stmt = $this->conn->prepare($query); // prepare the query
+        $stmt->execute(); // execute the statement
+        //
+        //
+        $row = $stmt->rowCount(); //count how many user(s) the query has returned
+        //
+        if($row>0){
+            // users array
+            $user_record=array();
+            //
+            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
+                // extract row
+                // this will turn $row['user_id'] to user_id
+                extract($row);
+                //
+                $each_user=array(
+                    "user_id"       => $user_id,
+                    "user_name"     => $user_name,
+                    "user_email"    => $user_email
+                );
+                //
+                array_push($user_record, $each_user);
+            }
+            //
+            http_response_code(200); // OK
+
+            // Show all users | array
+            return ($user_record);
+        }
+
+    }
 }
 //
 
