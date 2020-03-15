@@ -106,6 +106,20 @@ class User{
         }
     }
     //
+    public function deleteUser($id){
+        //
+        // method to delete an account
+        //
+        $query = "DELETE FROM user WHERE user_id = " . $id;
+        //
+        $stmt = $this->conn->prepare($query);
+        //
+        if($stmt->execute()){
+            return true;
+        }
+        echo json_encode(array("message" => "It was not possible to delete"));
+    }
+    //
     // Method to return all the users or the specific user
     //
     public function getUserById($id){

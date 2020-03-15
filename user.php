@@ -212,6 +212,68 @@ else{
             }
         }
     }
+    else{
+        if($method == 'DELETE'){
+            /*
+            //
+            //
+            //
+            // Delete an user
+            //
+            //
+            //
+            */
+            if($_GET["iduser"]){
+                // if exists an iduser, then
+                // Get a iduser using token as HEADER
+                //
+                $headers = apache_request_headers();
+                //
+                $jwt=isset($headers['token']) ? $headers['token'] : "";
+                //
+                // if jwt is not empty
+                if($jwt){
+                    //
+                    // all the tokens definitions are in "database/database_config.php"
+                    // such as $key, $iss...
+                    //
+                    try {
+                        // decode jwt
+                         $decoded = JWT::decode($jwt, $key, array('HS256'));
+                         // set response code
+                         http_response_code(200);
+                         //
+                         //
+                         // verifying if the delete requisition is from the correct user
+                         //
+                         if($_GET["iduser"] == $decoded->data->user_id){
+
+                             if($user->deleteUser($_GET["iduser"])){
+                                 //
+                                 echo json_encode(array(
+                                     "message" => "Delete.",
+                                 ));
+                             }
+                         }
+                         else{
+                             echo json_encode(array(
+                                 "message" => "You're trying to delete an account that doens't belong to you!",
+                             ));
+                         }
+                    }
+                    catch (Exception $e){
+                        // set response code
+                        http_response_code(401);
+                        // tell the user access denied, then an error message is shown
+                        echo json_encode(array(
+                            "message" => "Access denied.",
+                            "error" => $e->getMessage()
+                        ));
+                    }
+                }
+            }
+        }
+    }
 }
 
 ?>
