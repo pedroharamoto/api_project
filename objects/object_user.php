@@ -315,6 +315,46 @@ class User{
             return ($user_record);
         }
     }
+    //
+    public function getTopDrinker(){
+        //
+        // this function will return today's top drinker
+        //
+        $query = "
+            SELECT SUM(user_drink_ml)total, user_drink.user_id, user_drink_date, user_name, user_email
+            FROM user_drink, user
+            WHERE user_drink.user_id = user.user_id
+            AND DATE_FORMAT(user_drink_date, '%Y-%m-%d') = CURRENT_DATE()
+            GROUP BY user_drink.user_id
+            ORDER BY total DESC LIMIT 0,1
+        ";
+        $stmt = $this->conn->prepare($query); // prepare the query
+        $stmt->execute(); // execute the statement
+        //
+        $row = $stmt->rowCount(); //count how many user(s) the query has returned
+        //
+        if($row>0){
+            // there is one user
+            $row = $stmt->fetch(PDO::FETCH_ASSOC); // get the iteration record
+            // set the values to object properties
+            $this->user_id          = $row['user_id'];
+            $this->user_name        = $row['user_name'];
+            $this->user_email       = $row['user_email'];
+            $this->user_drink_ml    = $row['total'];
+            //
+            $topDrinker = array(
+                'user_id'         => $row['user_id'],
+                'user_name'       => $row['user_name'],
+                'user_email'      => $row['user_email'],
+                'user_drink_ml'   => $row['total']
+
+            );
+            //
+            return $topDrinker; // the user exists
+        }
+        //
+        return false; //the user doesn't exist
+    }
 }
 //
 
