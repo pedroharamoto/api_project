@@ -250,7 +250,7 @@ else{
                      //
                      if($_GET["iduser"] == $decoded->data->user_id){
                          //
-                         // before editting the user register, it is necessary to verify if the user is trying to change to an existing email
+                         // before editing the user register, it is necessary to verify if the user is trying to change to an existing email
                          //
                          if($user->updateUser($_GET["iduser"])){
                              //
