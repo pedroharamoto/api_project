@@ -19,7 +19,7 @@ $database   = new Database();
 $db         = $database->getConnection();
 //
 $user       = new User($db);
-// captures the posted data
+// capture the posted data
 $data   = json_decode(file_get_contents("php://input"));
 //
 $method = $_SERVER['REQUEST_METHOD'];
@@ -32,12 +32,6 @@ if( ($user->existsUserByEmail()) && (password_verify($data->user_password,$user-
     // the user exists and the verification is ok
     //
     // creating token
-    $key = "THE_SECRET_KEY";
-    $iss = "THE_ISSUER"; // server name
-    $aud = "THE_AUDIENCE";
-    $iat = time(); // issued at xx:xx
-    $nbf = $iat + 10; //not before in seconds
-    $exp = $iat + 180; // expire time in seconds
     //
     $token = array(
         "iss"   => $iss,
@@ -76,7 +70,5 @@ else{
         echo json_encode(array("message"   => "Login has failed. Wrong password"));
 
 }
-
-
 
 ?>
