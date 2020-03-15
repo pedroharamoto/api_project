@@ -24,5 +24,4 @@ $user       = new User($db);
 // Top Drinker
 //
 echo json_encode($user->getTopDrinker());
-
 ?>
