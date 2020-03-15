@@ -16,7 +16,8 @@ RewriteCond %{SCRIPT_FILENAME} !-d
 # /users/:iduser/drink   -> will count how many times the specified iduser drank water (POST method; action 6)
 # /login                 -> login (POST method; action 7) OK
 
-RewriteRule ^users$ user.php?action=1
+RewriteRule ^users/$ user.php
+RewriteRule ^users/([0-9]+)/?$ user.php?iduser=$1
 
 
 RewriteRule ^login$ login.php?action=7
