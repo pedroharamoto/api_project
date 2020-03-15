@@ -12,6 +12,7 @@ class User{
     public $user_email;
     public $user_password;
     public $user_drink_counter;
+    public $user_drink_ml;
     //
     public function __construct($db){
         // tries de connection
@@ -52,7 +53,7 @@ class User{
             $password_hash = password_hash($this->user_password, PASSWORD_BCRYPT);
             $stmt->bindParam(':user_password', $password_hash);
 
-            // execute the query, also check if query was successful
+            // execute the query, also check if it was successful
             if($stmt->execute()){
                 return true;
             }
@@ -150,6 +151,30 @@ class User{
         }
         //
         return false; //the user doesn't exist
+    }
+    //
+    public function userDrinks($id){
+        //
+        // this function increments the count register
+        //
+        //
+        $query = "  INSERT INTO user_drink
+                    SET
+                        user_id         = :user_id,
+                        user_drink_ml   = :user_drink_ml
+                ";
+
+        //prepare the query
+        $stmt = $this->conn->prepare($query);
+        // bindind all the values to the query
+        $stmt->bindParam(':user_id', $id);
+        $stmt->bindParam(':user_drink_ml', $this->user_drink_ml);
+        // execute the query, also check if it was successful
+        if($stmt->execute()){
+            return true;
+        }
+        echo json_encode(array("message" => "It was not possible to insert a new row to database (drinking water)"));
+        //
     }
     //
     public function existsUserByEmailandId($id){

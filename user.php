@@ -35,20 +35,85 @@ $method = $_SERVER['REQUEST_METHOD'];
 */
 if( ($method) == "POST"){
     //
-    $user->user_name        = $data->user_name;
-    $user->user_email       = $data->user_email;
-    $user->user_password    = $data->user_password;
-    //
-    // New User
-    if( ($user->user_name) && ($user->user_email) && ($user->user_password) && ($user->newUser()) ){
-        // if the conditions are true, then the user will be created
-        http_response_code(200); // OK
-        echo json_encode(array("message" => "User " . $user->user_email . " was created."));
-    }
-    else {
-        http_response_code(400); // Error
+    if($_GET["iduser"]){
         //
-        echo json_encode(array("message" => "It was not possible to register a new user."));
+        // Drinking water
+        //
+        $user->user_drink_ml   = $data->drink_ml;
+        // if exists an iduser, then
+        // Get a iduser using token as HEADER
+        //
+        $headers = apache_request_headers();
+        //
+        $jwt=isset($headers['token']) ? $headers['token'] : "";
+        //
+        // if jwt is not empty
+        //
+        if($jwt){
+            //
+            // all the tokens definitions are in "database/database_config.php"
+            // such as $key, $iss...
+            //
+            try {
+                // decode jwt
+                $decoded = JWT::decode($jwt, $key, array('HS256'));
+                // set response code
+                http_response_code(200);
+                //
+                if($_GET["iduser"] == $decoded->data->user_id){
+                    //
+                    // verifying if the requisition is from the correct user
+                    //
+                    if($user->userDrinks($_GET['iduser'])){
+                        // if it is true, then a user has been found
+                        // show user informations
+                        echo json_encode(array(
+                            "message" => "Drinkin water register OK.",
+                            "data" => $user
+                        ));
+                    }
+                    else{
+                        echo json_encode(array(
+                            "message" => "User " . $_GET['iduser'] . ' was not found'
+                        ));
+                    }
+                }
+                else{
+                    echo json_encode(array(
+                        "message" => "Action denied."
+                    ));
+                }
+            }
+            catch (Exception $e){
+                // set response code
+                http_response_code(401);
+                // tell the user access denied, then an error message is shown
+                echo json_encode(array(
+                    "message" => "Access denied.",
+                    "error" => $e->getMessage()
+                ));
+            }
+        }
+    }
+    else{
+        //
+        // New User
+        //
+
+        $user->user_name        = $data->user_name;
+        $user->user_email       = $data->user_email;
+        $user->user_password    = $data->user_password;
+
+        if( ($user->user_name) && ($user->user_email) && ($user->user_password) && ($user->newUser()) ){
+            // if the conditions are true, then the user will be created
+            http_response_code(200); // OK
+            echo json_encode(array("message" => "User " . $user->user_email . " was created."));
+        }
+        else {
+            http_response_code(400); // Error
+            //
+            echo json_encode(array("message" => "It was not possible to register a new user."));
+        }
     }
 }
 else{
