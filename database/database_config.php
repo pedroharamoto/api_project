@@ -16,21 +16,21 @@ class Database{
     //
     public function __construct(){
         //
-        $this->conn = null; //sets the public variable $conn as null in order to clean it
+        $this->conn = null; //set the public variable $conn as null in order to clean it
 
         try{
-            //tries the connection
+            //try the connection
             // Using PDO in order to use an exception class that handles possible problems that may occur
             $this->conn = new PDO("mysql:host=".$this->host, $this->username, $this->password);
             $this->conn->exec("SET NAMES utf8");
             //
             $query  = "CREATE DATABASE IF NOT EXISTS" . $this->db_name; // SQL Query to create a database named by the public variable $db_name
             //
-            $stmt   = $this->conn->prepare($query); // Prepares the query to execute it
-            $stmt->execute(); //executes the query
+            $stmt   = $this->conn->prepare($query); // Prepare the query to execute it
+            $stmt->execute(); //execute the query
         }
         catch(PDOException $exception){
-            //if was not possible to connect to the database, then shows the following message
+            //if was not possible to connect to the database, then the following message is shown
             echo "Connection to the " . $this->db_name . " has failed<br>Error: " . $exception->getMessage();
             //
         }
@@ -38,21 +38,21 @@ class Database{
         return $this->conn;
     }
     //
-    // This method gets the datebase connetion
+    // connection to the database
     //
     public function getConnection(){
         //
-        $this->conn = null; //sets the public variable $conn as null in order to clean it
+        $this->conn = null; //set the public variable $conn as null in order to clean it
 
         try{
-            //tries the connection
+            //try the connection
             // Using PDO in order to use an expection class that handles possible problems that may occur
             $this->conn = new PDO("mysql:host=" . $this->host . ";dbname=" . $this->db_name, $this->username, $this->password);            $this->conn->exec("SET NAMES utf8");
             //
             $this->conn->exec("set names utf8");
         }
         catch(PDOException $exception){
-            //if was not possible to connect to the database, then shows the following message
+            //if was not possible to connect to the database, then the following message is shown
             echo "Connection to the " . $this->db_name . " has failed<br>Error: " . $exception->getMessage();
             //
         }
@@ -60,7 +60,7 @@ class Database{
         return $this->conn;
     }
     //
-    // This method creates the user table
+    // Create the user table
     //
     public function createUserTable(){
         //
@@ -76,12 +76,12 @@ class Database{
                     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=1;
         ";
         //
-        $stmt = $this->conn->prepare($query); // Prepares the query to execute it
-        $stmt->execute(); //executes the query
+        $stmt = $this->conn->prepare($query); // Prepare the query to execute it
+        $stmt->execute(); //execute the query
         //
     }
     //
-    // This method creates the user table
+    // Create the user table
     //
     public function createUserDrinkTable(){
         //
@@ -104,11 +104,17 @@ class Database{
 
         ";
         //
-        $stmt = $this->conn->prepare($query); // Prepares the query to execute it
-        $stmt->execute(); //executes the query
+        $stmt = $this->conn->prepare($query); // Prepare the query to execute it
+        $stmt->execute(); //execute the query
         //
     }
     //
 }
+$key = "THE_SECRET_KEY";
+$iss = "THE_ISSUER"; // server name
+$aud = "THE_AUDIENCE";
+$iat = time(); // issued at xx:xx
+$nbf = $iat + 10; //not before in seconds
+$exp = $iat + 999999999999; // expire time in seconds
 
 ?>
