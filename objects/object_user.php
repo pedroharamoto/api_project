@@ -11,6 +11,7 @@ class User{
     public $user_name;
     public $user_email;
     public $user_password;
+    public $user_drink_counter;
     //
     public function __construct($db){
         // tries de connection
@@ -36,7 +37,7 @@ class User{
                             user_password   = :user_password
                     ";
 
-            //prepares the query
+            //prepare the query
             $stmt = $this->conn->prepare($query);
             // removing all the special characters
             $this->user_name        = htmlspecialchars(strip_tags($this->user_name));
@@ -66,34 +67,29 @@ class User{
         // If $id = 0, then all the users are returned
         // If $id != 0, then its returned the specified user, which is $id itself
         //
-        $query = "SELECT * FROM user WHERE 1 ";
+        $query = "SELECT * FROM user, user_drink WHERE user.user_id = user_drink.user_id AND user.user_id = " . $id;
         //
-        if($id){
-            $query .= " AND user_id = " . $id;
+        $stmt = $this->conn->prepare($query); // prepare the query
+        $stmt->execute(); // execute the statement
+        //
+        $users_array = array(); // create an array to store the user(s)
+        //
+        $row = $stmt->rowCount(); //count how many user(s) the query has returned
+        //
+        if($row>0){
+            // there is one user
+            $row = $stmt->fetch(PDO::FETCH_ASSOC); // get the iteration record
+            // set the values to object properties
+            $this->user_id              = $row['user_id'];
+            $this->user_name            = $row['user_name'];
+            $this->user_email           = $row['user_email'];
+            $this->user_password        = '';
+            $this->user_drink_counter   = $stmt->rowCount(); //just how many times, not all the information
+            //
+            return true; // the user exists
         }
         //
-        $stmt = $this->conn->prepare($query); // prepares the query
-        $stmt->execute(); // executes the statement
-        //
-        $users_array = array(); // creates an array to store the user(s)
-        //
-        $row = $stmt->rowCount(); //counts how many user(s) the query has returned
-        //
-        while($row = $stmt->fetch(PDO::FETCH_ASSOC)){
-               //
-               extract($row); // gets the iteration record
-               //
-               $user = array(
-                   "user_id"         => $user_id,
-                   "user_name"      => $user_name,
-                   "user_email"     => $user_email,
-                   "user_password"  => $user_password
-               );
-               //
-               array_push($users_array,$user);
-        }
-        //
-        return json_encode($users_array); //encodes the final array and return the encoded JSON
+        return false; //the user doesn't exist
     }
     //
     public function existsUserByEmail(){
@@ -102,15 +98,15 @@ class User{
         //
         $query = "SELECT * FROM user WHERE user_email = '" . $this->user_email . "' LIMIT 0,1";
         //
-        $stmt = $this->conn->prepare($query); // prepares the query
-        $stmt->execute(); // executes the statement
+        $stmt = $this->conn->prepare($query); // prepare the query
+        $stmt->execute(); // execute the statement
         //
-        $row = $stmt->rowCount(); //counts how many user(s) the query has returned
+        $row = $stmt->rowCount(); //count how many user(s) the query has returned
         //
         if($row>0){
             // there is one user
-            $row = $stmt->fetch(PDO::FETCH_ASSOC); // gets the iteration record
-            // sets the values to object properties
+            $row = $stmt->fetch(PDO::FETCH_ASSOC); // get the iteration record
+            // set the values to object properties
             $this->user_id       = $row['user_id'];
             $this->user_name     = $row['user_name'];
             $this->user_password = $row['user_password'];
@@ -127,10 +123,10 @@ class User{
         //
         $query = "SELECT * FROM user_drink WHERE user_id = '" . $this->user_id . "'";
         //
-        $stmt = $this->conn->prepare($query); // prepares the query
-        $stmt->execute(); // executes the statement
+        $stmt = $this->conn->prepare($query); // prepare the query
+        $stmt->execute(); // execute the statement
         //
-        $row = $stmt->rowCount(); //counts how many times
+        $row = $stmt->rowCount(); //count how many times
         //
         return $row; // times
     }

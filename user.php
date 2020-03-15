@@ -12,6 +12,9 @@ header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers
 include_once 'database/database_config.php';
 include_once 'objects/object_user.php';
 //
+require "vendor/autoload.php";
+use \Firebase\JWT\JWT;
+//
 $database   = new Database();
 $db         = $database->getConnection();
 //
@@ -20,33 +23,69 @@ $user       = new User($db);
 $data   = json_decode(file_get_contents("php://input"));
 //
 $method = $_SERVER['REQUEST_METHOD'];
+//
 // setting user property values
-$user->user_name        = $data->user_name;
-$user->user_email       = $data->user_email;
-$user->user_password    = $data->user_password;
-//
-// the following code defines the actions
-/*
-according to the .htaccess{
-    action = 1 => New user;
-    action = 2 => Return all the users;
-    action = 3 => return the specified iduser
-    action = 4 => edit the specified iduser
-    action = 5 => delete the specified iduser
-    action = 6 => count how many times the specified iduser drank water
-    action = 7 => login
-}
-*/
-//
-// New User
-if( ($user->user_name) && ($user->user_email) && ($user->user_password) && ($user->newUser()) ){
-    // if the conditions are true, then the user will be created
-    http_response_code(200); // OK
-    echo json_encode(array("message" => "User " . $user->user_email . " was created."));
-}
-else {
-    http_response_code(400); // Error
+if ( ($method) != "GET"){
     //
-    echo json_encode(array("message" => "It was not possible to register a new user."));
+    $user->user_name        = $data->user_name;
+    $user->user_email       = $data->user_email;
+    $user->user_password    = $data->user_password;
+    //
+    // New User
+    if( ($user->user_name) && ($user->user_email) && ($user->user_password) && ($user->newUser()) ){
+        // if the conditions are true, then the user will be created
+        http_response_code(200); // OK
+        echo json_encode(array("message" => "User " . $user->user_email . " was created."));
+    }
+    else {
+        http_response_code(400); // Error
+        //
+        echo json_encode(array("message" => "It was not possible to register a new user."));
+    }
+}
+else{
+    //
+    // Get a iduser using token as HEADER
+    //
+    $headers = apache_request_headers();
+    //
+    $jwt=isset($headers['token']) ? $headers['token'] : "";
+    //
+    // if jwt is not empty
+    if($jwt){
+        //
+        // all the tokens definitions are in "database/database_config.php"
+        // such as $key, $iss...
+        //
+        try {
+            // decode jwt
+            $decoded = JWT::decode($jwt, $key, array('HS256'));
+            // set response code
+            http_response_code(200);
+            //
+            if($user->getUserById($_GET['iduser'])){
+                // if it is true, then a user has been found
+                // show user informations
+                echo json_encode(array(
+                    "message" => "Clear to go.",
+                    "data" => $user
+                ));
+            }
+            else{
+                echo json_encode(array(
+                    "message" => "User " . $_GET['iduser'] . ' was not found'
+                ));
+            }
+        }
+        catch (Exception $e){
+            // set response code
+            http_response_code(401);
+            // tell the user access denied, then an error message is shown
+            echo json_encode(array(
+                "message" => "Access denied.",
+                "error" => $e->getMessage()
+            ));
+        }
+    }
 }
 ?>
