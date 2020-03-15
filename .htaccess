@@ -8,11 +8,11 @@ RewriteEngine On
 RewriteCond %{SCRIPT_FILENAME} !-f
 RewriteCond %{SCRIPT_FILENAME} !-d
 
-# /users/                -> will create a new user     (POST method) OK
-# /users/                -> will return all the users  (GET method)
-# /users/:iduser         -> will return the specified iduser   (GET method) OK
-# /users/:iduser         -> will edit the specified iduser     (PUT method)
-# /users/:iduser         -> will delete the specified iduser   (DELETE method)
+# /users/                -> will create a new user              (POST method) OK
+# /users/                -> will return all the users           (GET method) OK
+# /users/:iduser         -> will return the specified iduser    (GET method) OK
+# /users/:iduser         -> will edit the specified iduser      (PUT method) OK
+# /users/:iduser         -> will delete the specified iduser    (DELETE method)
 # /users/:iduser/drink   -> will count how many times the specified iduser drank water (POST method)
 # /login                 -> login (POST method) OK
 
