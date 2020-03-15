@@ -27,6 +27,8 @@ $method = $_SERVER['REQUEST_METHOD'];
 $user->user_email       = $data->user_email;
 $user->user_password    = $data->user_password;
 //
+
+//
 if( ($user->existsUserByEmail()) && (password_verify($data->user_password,$user->user_password)) ){
     //
     // the user exists and the verification is ok

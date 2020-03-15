@@ -19,7 +19,7 @@ $database   = new Database();
 $db         = $database->getConnection();
 //
 $user       = new User($db);
-// captures the posted data
+// capture the posted data
 $data   = json_decode(file_get_contents("php://input"));
 //
 $method = $_SERVER['REQUEST_METHOD'];
@@ -40,7 +40,7 @@ if( ($method) == "POST"){
         // Drinking water
         //
         $user->user_drink_ml   = $data->drink_ml;
-        // if exists an iduser, then
+        // if exist an iduser, then
         // Get a iduser using token as HEADER
         //
         $headers = apache_request_headers();

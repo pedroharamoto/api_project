@@ -272,6 +272,49 @@ class User{
         //
         return false; //the user doesn't exist
     }
+    //
+    public function getRecordHistory($id){
+        //
+        // this function shows the $id user's record history
+        //
+        $query = "SELECT user.user_id user_id, user.user_name user_name, user.user_email user_email,
+        user_drink.user_drink_date user_drink_date, user_drink.user_drink_ml user_drink_ml
+         FROM `user_drink`, `user` WHERE user_drink.user_id = user.user_id AND user.user_id = " . $id;
+        //
+        $stmt = $this->conn->prepare($query); // prepare the query
+        $stmt->execute(); // execute the statement
+        //
+        //
+        $row = $stmt->rowCount(); //count how many user(s) the query has returned
+        //
+        if($row>0){
+            // users array
+            $user_record=array();
+            $user_record['history'] = array();
+            //
+            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
+                // extract row
+                // this will turn $row['user_id'] to user_id
+                extract($row);
+                //
+                $each_user=array(
+                    "user_drink_date"   => $user_drink_date,
+                    "user_drink_ml"     => $user_drink_ml
+                );
+                //
+                array_push($user_record['history'], $each_user);
+            }
+            //
+            $user_record['user_id']      = $user_id;
+            $user_record['user_name']    = $user_name;
+            $user_record['user_email']   = $user_email;
+            //
+            http_response_code(200); // OK
+
+            // Show all users | array
+            return ($user_record);
+        }
+    }
 }
 //
 

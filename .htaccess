@@ -16,8 +16,16 @@ RewriteCond %{SCRIPT_FILENAME} !-d
 # /users/:iduser/drink   -> will count how many times the specified iduser drank water (POST method) OK
 # /login                 -> login (POST method) OK
 
-RewriteRule ^users/$ user.php?iduser=$1
-RewriteRule ^users/([0-9]+)/?$ user.php?iduser=$1
-RewriteRule ^users/([0-9]+)/drink?$ user.php?iduser=$1
+RewriteRule     ^users/$                user.php?iduser=$1
+RewriteRule     ^users/([0-9]+)/?$      user.php?iduser=$1
+RewriteRule     ^users/([0-9]+)/drink?$ user.php?iduser=$1
 
-RewriteRule ^login$ login.php?action=7
+RewriteRule ^login$ login.php
+
+#/optional/pagination/:page/        -> will return short list of users ... 2 per page, just an example (GET method)
+#/optional/recordhistory/:iduser/   -> will return the record history       (GET method)
+#/optional/topdrinker/              -> will return the user who drank more than everyone else   (GET method)
+
+RewriteRule     ^optional/pagination/([0-9]+)/?$       optional.php?page=$1
+RewriteRule     ^optional/recordhistory/([0-9]+)/?$    optional.php?iduser=$1
+RewriteRule     ^optional/topdrinker/?$                optional.php?page=$1
