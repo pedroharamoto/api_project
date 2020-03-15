@@ -24,8 +24,8 @@ RewriteRule ^login$ login.php
 
 #/optional/pagination/:page/        -> will return short list of users ... 2 per page, just an example (GET method)
 #/optional/recordhistory/:iduser/   -> will return the record history       (GET method) OK
-#/optional/topdrinker/              -> will return the user who drank more than everyone else   (GET method)
+#/optional/topdrinker/              -> will return the user who drank more than everyone else   (GET method) OK
 
-RewriteRule     ^pagination/([0-9]+)/?$        pagenation.php?page=$1
-RewriteRule     ^recordhistory/([0-9]+)/?$     recordhistory.php?iduser=$1
-RewriteRule     ^topdrinker/?$                 topdrinker.php
+RewriteRule     ^pagination/([0-9]+)/([0-9]+)/?$        pagination.php?page=$1&qty=$2
+RewriteRule     ^recordhistory/([0-9]+)/?$              recordhistory.php?iduser=$1
+RewriteRule     ^topdrinker/?$                          topdrinker.php
