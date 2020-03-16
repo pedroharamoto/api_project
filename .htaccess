@@ -22,7 +22,7 @@ RewriteRule     ^users/([0-9]+)/drink?$ user.php?iduser=$1
 
 RewriteRule ^login$ login.php
 
-#/optional/pagination/:page/        -> will return short list of users ... 2 per page, just an example (GET method)
+#/optional/pagination/:page/        -> will return a short list of users ... 2 per page, just an example (GET method)
 #/optional/recordhistory/:iduser/   -> will return the record history       (GET method) OK
 #/optional/topdrinker/              -> will return the user who drank more than everyone else   (GET method) OK
 
